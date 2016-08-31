@@ -51,38 +51,32 @@ public class DataGenerator {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataGenerator.class);
 
-	final String baseURL = "http://enews.patricbrc.org";
-
-	final String[] REFERENCE_GENOME_IDS = { "83332.12", "511145.12", "99287.12", "198215.6", "214092.21", "169963.11", "158879.11", "373153.27",
+	private final String[] REFERENCE_GENOME_IDS = { "83332.12", "511145.12", "99287.12", "198215.6", "214092.21", "169963.11", "158879.11", "373153.27",
 			"224914.11", "85962.8" };
 
-	final String[] REFERENCE_GENOME_IDS_TRANSCRIPTOMICS = { "83332.12", "511145.12", "99287.12", "208964.12", "214092.21", "169963.11", "158879.11",
+	private final String[] REFERENCE_GENOME_IDS_TRANSCRIPTOMICS = { "83332.12", "511145.12", "99287.12", "208964.12", "214092.21", "169963.11", "158879.11",
 			"373153.27", "224914.11", "85962.8" };
 
-	final Integer[] GENUS_TAXON_IDS = { 1386, 773, 138, 234, 32008, 194, 810, 1485, 776, 943, 561, 262, 209, 1637, 1763, 780, 590, 620, 1279, 1301,
+	private final Integer[] GENUS_TAXON_IDS = { 1386, 773, 138, 234, 32008, 194, 810, 1485, 776, 943, 561, 262, 209, 1637, 1763, 780, 590, 620, 1279, 1301,
 			662, 629 };
 
-	final String URL_GENOMEOVERVIEW_TAB = "Genome?cType={cType}&cId={cId}";
+	private final String URL_GENOMEOVERVIEW_TAB = "/view/Genome/{genomeId}";
 
-	final String URL_FEATURETABLE_TAB = "FeatureTable?cType={cType}&cId={cId}&featuretype={featureType}&annotation=PATRIC&filtertype={filterType}";
+	private final String URL_FEATURETABLE_TAB = "/view/Genome/{genomeId}#view_tab=features";
 
-	final String URL_PROTEINFAMILY_TAB = "FIGfam?cType={cType}&cId={cId}&dm=result&bm=";
+	private final String URL_PROTEINFAMILY_TAB = "/view/Genome/{genomeId}#view_tab=proteinFamilies";
 
-	final String URL_PATHWAY_TAB = "CompPathwayTable?cType={cType}&cId={cId}&algorithm=PATRIC&ec_number=#aP0=1&aP1=1&aP2=1&aT=0&alg=PATRIC&cwEC=false&cwP=true&pId={pId}&pClass=&ecN=";
+	private final String URL_PATHWAY_TAB = "/view/Genome/{genomeId}#view_tab=pathways";
 
-	final String URL_TRANSCRIPTOMICS_TAB = "ExperimentList?cType={cType}&cId={cId}&kw={kw}";
+	private final String URL_TRANSCRIPTOMICS_TAB = "/view/Genome/{genomeId}#view_tab=transcriptomics";
 
-	final String URL_SINGLE_EXP = "SingleExperiment?cType=taxon&cId=2&eid={eid}";
+	private final String URL_SINGLE_EXP = "/view/ExperimentComparison/{eid}";
 
-	final String URL_GENOMEBROWSER = "GenomeBrowser?cType={cType}&cId={cId}&loc=0..10000&tracks=";
+	private final String URL_GENOMEBROWSER = "/view/Genome/{genomeId}#view_tab=browser";
 
-	final String URL_PATHWAY_EC_TAB = "CompPathwayTable?cType=genome&cId={cId}&algorithm=PATRIC&ec_number=#aP0=1&aP1=1&aP2=1&aT=1&alg=PATRIC&cwEC=false&cwP=true&pId={pId}&pClass=&ecN=";
+	private final String URL_SPECIALTY_GENE_TAB = "/view/Genome/{genomeId}#view_tab=specialtyGenes&filter=eq(source,{source})";
 
-	final String URL_PATHWAY_GENE_TAB = "CompPathwayTable?cType=genome&cId={cId}&algorithm=PATRIC&ec_number=#aP0=1&aP1=1&aP2=1&aT=2&alg=PATRIC&cwEC=false&cwP=true&pId={pId}&pClass=&ecN=";
-
-	final String URL_SPECIALTY_GENE_TAB = "SpecialtyGeneList?cType=genome&cId={cId}&kw=source:{source}";
-
-	DataApiHandler dataApi;
+	private DataApiHandler dataApi;
 
 	private ObjectReader jsonReader;
 
@@ -97,27 +91,7 @@ public class DataGenerator {
 		boolean isSuccess = false;
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-genomes-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-genomes-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-genomes-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-genomes-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
-		}
+
 		// from solr or database
 		// add popularGenomes
 		data = getPopularGenomes();
@@ -164,28 +138,6 @@ public class DataGenerator {
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-proteinfamilies-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-proteinfamilies-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-proteinfamilies-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-proteinfamilies-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
-		}
-		//
 		// add popularGenra
 		data = getPopularGeneraFigfam();
 		if (data != null) {
@@ -215,31 +167,10 @@ public class DataGenerator {
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-genomicfeatures-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
 		// popular genomes
 		data = getPopularGenomesForGenomicFeature();
 		if (data != null) {
 			jsonData.put("popularGenomes", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-genomicfeatures-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-genomicfeatures-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-genomicfeatures-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
 		}
 
 		// save jsonData to file
@@ -260,31 +191,10 @@ public class DataGenerator {
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-specialtygenes-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
 		// popular genomes
 		data = getPopularGenomesForSpecialtyGene();
 		if (data != null) {
 			jsonData.put("popularGenomes", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-specialtygenes-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-specialtygenes-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-specialtygenes-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
 		}
 
 		// save jsonData to file
@@ -305,31 +215,10 @@ public class DataGenerator {
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-antibioticresistance-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
 		// popular genomes
 		data = this.getPopularGenomesForAntibioticResistanceGene();
 		if (data != null) {
 			jsonData.put("popularGenomes", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-antibioticresistance-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-antibioticresistance-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-antibioticresistance-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
 		}
 
 		// save jsonData to file
@@ -350,27 +239,6 @@ public class DataGenerator {
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-transcriptomics-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-transcriptomics-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-transcriptomics-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-transcriptomics-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
-		}
 		// topSpecies
 		data = getTopSpeciesForTranscriptomics();
 		if (data != null) {
@@ -400,97 +268,12 @@ public class DataGenerator {
 		return isSuccess;
 	}
 
-	public boolean createCacheFileProteomics(String filePath) {
-		boolean isSuccess = false;
-		JSONObject jsonData = new JSONObject();
-		JSONObject data;
-
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-proteomics-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-proteomics-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-proteomics-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-proteomics-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
-		}
-
-		// save jsonData to file
-		try (
-			PrintWriter jsonOut = new PrintWriter(Files.newBufferedWriter(FileSystems.getDefault().getPath(filePath), Charset.defaultCharset()));
-		) {
-			jsonData.writeJSONString(jsonOut);
-			isSuccess = true;
-		}
-		catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return isSuccess;
-	}
-
-	public boolean createCacheFilePPInteractions(String filePath) {
-		boolean isSuccess = false;
-		JSONObject jsonData = new JSONObject();
-		JSONObject data;
-
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-ppinteractions-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-ppinteractions-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-ppinteractions-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-ppinteractions-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
-		}
-
-		// save jsonData to file
-		try (
-			PrintWriter jsonOut = new PrintWriter(Files.newBufferedWriter(FileSystems.getDefault().getPath(filePath), Charset.defaultCharset()));
-		) {
-			jsonData.writeJSONString(jsonOut);
-			isSuccess = true;
-		}
-		catch (IOException e) {
-			LOGGER.error(e.getMessage(), e);
-		}
-		return isSuccess;
-	}
 
 	public boolean createCacheFilePathways(String filePath) {
 		boolean isSuccess = false;
 		JSONObject jsonData = new JSONObject();
 		JSONObject data;
 
-		// from WP
-		// data
-		data = read(baseURL + "/tab/dlp-pathways-data/?req=passphrase");
-		if (data != null) {
-			jsonData.put("data", data);
-		}
 		// conservation
 		data = getPathwayECDist();
 		if (data != null) {
@@ -500,21 +283,6 @@ public class DataGenerator {
 		data = getPopularGenomesForPathways();
 		if (data != null) {
 			jsonData.put("popularGenomes", data);
-		}
-		// tools
-		data = read(baseURL + "/tab/dlp-pathways-tools/?req=passphrase");
-		if (data != null) {
-			jsonData.put("tools", data);
-		}
-		// process
-		data = read(baseURL + "/tab/dlp-pathways-process/?req=passphrase");
-		if (data != null) {
-			jsonData.put("process", data);
-		}
-		// download
-		data = read(baseURL + "/tab/dlp-pathways-download/?req=passphrase");
-		if (data != null) {
-			jsonData.put("download", data);
 		}
 
 		// save jsonData to file
@@ -569,7 +337,7 @@ public class DataGenerator {
 			JSONArray data = getFIGFamConservationDistribution(txId);
 
 			JSONObject item = new JSONObject();
-			item.put("link", "/portal/portal/patric/FIGfam?cType=taxon&cId=" + txId + "&dm=result&bm=&pk=");
+			item.put("link", "/view/Taxonomy/" + txId + "#view_tab=proteinFamilies");
 			item.put("popularName", taxonomy.getTaxonName());
 			item.put("popularData", data);
 
@@ -636,8 +404,8 @@ public class DataGenerator {
 		//.set("json.facet", "{genome_count:{range:{field:completion_date,start:\"2010-01-01T00:00:00.000Z\",end:\"2016-01-01T00:00:00.000Z\",gap:\"%2B1YEAR\",other:\"before\"}}}");
 
 		try {
-			Date rangeStartDate = DateUtil.parseDate("2010-01-01'T'00:00:00.000'Z'");
-			Date rangeEndDate = DateUtil.parseDate("2016-01-01'T'00:00:00.000'Z'");
+			Date rangeStartDate = DateUtil.parseDate("2011-01-01'T'00:00:00.000'Z'");
+			Date rangeEndDate = DateUtil.parseDate("2017-01-01'T'00:00:00.000'Z'");
 
 			queryComplete.addDateRangeFacet("completion_date", rangeStartDate, rangeEndDate, "+1YEAR").add(FacetParams.FACET_RANGE_OTHER, "before");
 			queryWGS.addDateRangeFacet("completion_date", rangeStartDate, rangeEndDate, "+1YEAR").add(FacetParams.FACET_RANGE_OTHER, "before");
@@ -834,7 +602,7 @@ public class DataGenerator {
 
 				JSONObject organism = new JSONObject();
 				organism.put("label", entry.getKey());
-				organism.put("value", entry.getValue());
+				organism.put("count", entry.getValue());
 				data.add(organism);
 				i++;
 				if (i > 4) {
@@ -901,9 +669,9 @@ public class DataGenerator {
 
 			// construct genome
 			JSONObject popGenome = new JSONObject();
-			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{genomeId}", genomeId));
 			popGenome.put("popularName", genome.getGenomeName());
-			popGenome.put("gb_link", URL_GENOMEBROWSER.replace("{cType}", "genome").replace("{cId}", genomeId));
+			popGenome.put("gb_link", URL_GENOMEBROWSER.replace("{genomeId}", genomeId));
 
 			// meta data
 			JSONObject meta = new JSONObject();
@@ -920,27 +688,24 @@ public class DataGenerator {
 
 			popGenome.put("metadata", meta);
 
-			JSONArray data = new JSONArray();
+			JSONObject data = new JSONObject();
 
 			// Features
 			JSONObject ft = new JSONObject();
-			ft.put("description", "Features");
-			ft.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{featureType}", "")
+
+			ft.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId)
 					.replace("{filterType}", ""));
-			ft.put("picture", "/patric/images/icon-popular-feature.png");
 			ft.put("data", genome.getPatricCds());
-			data.add(ft);
+			data.put("features", ft);
 
 			// Pathways
 			JSONObject pw = new JSONObject();
-			pw.put("description", "Pathways");
-			pw.put("link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", ""));
-			pw.put("picture", "/patric/images/icon-popular-pathway.png");
+			pw.put("link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId));
 
 			int cntPathway = 0;
 			try {
 				SolrQuery query = new SolrQuery("genome_id:" + genomeId);
-				// {stat:{field:{field:genome_id,facet:{pathway_count:"unique(pathway_id)"}}}}}
+
 				query.setRows(0).setFacet(true).set("json.facet", "{stat:{field:{field:genome_id,facet:{pathway_count:\"unique(pathway_id)\"}}}}}");
 
 				LOGGER.trace("[{}] {}", SolrCore.PATHWAY.getSolrCoreName(), query);
@@ -957,18 +722,15 @@ public class DataGenerator {
 				LOGGER.error(e.getMessage(), e);
 			}
 			pw.put("data", cntPathway);
-			data.add(pw);
+			data.put("pathways", pw);
 
 			// Protein Family
 			JSONObject pf = new JSONObject();
-			pf.put("description", "Protein Families");
-			pf.put("link", URL_PROTEINFAMILY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
-			pf.put("picture", "/patric/images/icon-popular-proteinfamily.png");
+			pf.put("link", URL_PROTEINFAMILY_TAB.replace("{genomeId}", genomeId));
 
 			// Experiment
 			JSONObject tr = new JSONObject();
-			tr.put("description", "Transcriptomic Experiments");
-			tr.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{kw}", ""));
+			tr.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{genomeId}", genomeId));
 
 			long numFound = 0;
 			try {
@@ -989,7 +751,7 @@ public class DataGenerator {
 			tr.put("picture", "/patric/images/icon-popular-experiment.png");
 			tr.put("data", (int) numFound);
 
-			data.add(tr);
+			data.put("experiments", tr);
 
 			try {
 				SolrQuery query = new SolrQuery("figfam_id:[* TO *] AND annotation:PATRIC AND genome_id:" + genomeId);
@@ -1007,9 +769,9 @@ public class DataGenerator {
 			catch (IOException e) {
 				LOGGER.error(e.getMessage(), e);
 			}
-			data.add(pf);
+			data.put("proteinfamily", pf);
 
-			popGenome.put("popularData", data);
+			popGenome.put("dataType", data);
 
 			list.add(popGenome);
 		}
@@ -1038,7 +800,7 @@ public class DataGenerator {
 
 			// construct genome
 			JSONObject popGenome = new JSONObject();
-			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{genomeId}", genomeId));
 			popGenome.put("popularName", genome.getGenomeName());
 
 			JSONArray featureTypes = new JSONArray();
@@ -1055,8 +817,7 @@ public class DataGenerator {
 					JSONObject fTypes = new JSONObject();
 					fTypes.put("description", entry.getKey());
 					fTypes.put("link",
-							URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{featureType}", entry.getKey())
-									.replace("{filterType}", ""));
+							URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) + "&filter=and(eq(feature_type,{featureType}),eq(annotation,PATRIC))".replace("{featureType}", entry.getKey()));
 					fTypes.put("data", entry.getValue());
 					featureTypes.add(fTypes);
 					i++;
@@ -1071,8 +832,8 @@ public class DataGenerator {
 				Map hypotheticalFacets = (Map) ((Map) hypotheticalResponse.get("facets")).get("annotation");
 
 				hypotheticalProteins.put("description", "Unknown functions");
-				hypotheticalProteins.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-						.replace("{featureType}", "CDS").replace("{filterType}", "hypothetical_proteins"));
+				hypotheticalProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(product,hypothetical+protein))");
 
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) hypotheticalFacets.entrySet()) {
 					hypotheticalProteins.put("data", entry.getValue());
@@ -1084,9 +845,8 @@ public class DataGenerator {
 				Map functionalFacets = (Map) ((Map) functionalResponse.get("facets")).get("annotation");
 
 				functionalProteins.put("description", "Functional assignments");
-				functionalProteins.put("link",
-						URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{featureType}", "CDS")
-								.replace("{filterType}", "functional_proteins"));
+				functionalProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),ne(product,hypothetical+protein))");
 
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) functionalFacets.entrySet()) {
 					functionalProteins.put("data", entry.getValue());
@@ -1098,9 +858,8 @@ public class DataGenerator {
 				Map ecFacets = (Map) ((Map) ecResponse.get("facets")).get("annotation");
 
 				ecAssignedProteins.put("description", "EC assignments");
-				ecAssignedProteins.put("link",
-						URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{featureType}", "CDS")
-								.replace("{filterType}", "ec"));
+				ecAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(ec,*))");
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) ecFacets.entrySet()) {
 					ecAssignedProteins.put("data", entry.getValue());
 				}
@@ -1112,8 +871,8 @@ public class DataGenerator {
 
 				goAssignedProteins.put("description", "GO assignments");
 				goAssignedProteins.put("link",
-						URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{featureType}", "CDS")
-								.replace("{filterType}", "go"));
+						URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+								"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(go,*))");
 
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) goFacets.entrySet()) {
 					goAssignedProteins.put("data", entry.getValue());
@@ -1125,8 +884,8 @@ public class DataGenerator {
 				Map pathwayFacets = (Map) ((Map) pathwayResponse.get("facets")).get("annotation");
 
 				pathwayAssignedProteins.put("description", "Pathways assignments");
-				pathwayAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-						.replace("{featureType}", "CDS").replace("{filterType}", "pathway"));
+				pathwayAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(pathway,*))");
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) pathwayFacets.entrySet()) {
 					pathwayAssignedProteins.put("data", entry.getValue());
 				}
@@ -1137,8 +896,8 @@ public class DataGenerator {
 				Map figfamFacets= (Map) ((Map) figfamResponse.get("facets")).get("annotation");
 
 				figfamAssignedProteins.put("description", "FIGfam assignments");
-				figfamAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-						.replace("{featureType}", "CDS").replace("{filterType}", "figfam_id"));
+				figfamAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(figfam_id,*))");
 
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) figfamFacets.entrySet()) {
 					figfamAssignedProteins.put("data", entry.getValue());
@@ -1157,7 +916,7 @@ public class DataGenerator {
 
 						JSONObject sp = new JSONObject();
 						sp.put("description", property + ": " + source);
-						sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{cId}", genomeId).replace("{source}", source));
+						sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{genomeId}", genomeId).replace("{source}", source));
 						sp.put("data", entrySource.getValue());
 
 						specialtyGenes.add(sp);
@@ -1177,32 +936,31 @@ public class DataGenerator {
 			// Genome Browser
 			JSONObject link = new JSONObject();
 			link.put("name", "Genome Browser");
-			link.put("link", URL_GENOMEBROWSER.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_GENOMEBROWSER.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Feature Table
 			link = new JSONObject();
 			link.put("name", "Feature Table");
-			link.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-					.replace("{featureType}", "").replace("{filterType}", ""));
+			link.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Protein Family
 			link = new JSONObject();
 			link.put("name", "Protein Family Sorter");
-			link.put("link", URL_PROTEINFAMILY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_PROTEINFAMILY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Pathway
 			link = new JSONObject();
 			link.put("name", "Pathway");
-			link.put("link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", ""));
+			link.put("link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Transcriptomics
 			link = new JSONObject();
 			link.put("name", "Transcriptomics");
-			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{kw}", ""));
+			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			popGenome.put("links", links);
@@ -1226,7 +984,7 @@ public class DataGenerator {
 
 			// construct genome
 			JSONObject popGenome = new JSONObject();
-			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{genomeId}", genomeId));
 			popGenome.put("popularName", genome.getGenomeName());
 
 			JSONArray specialtyGenes = new JSONArray();
@@ -1244,7 +1002,7 @@ public class DataGenerator {
 
 						JSONObject sp = new JSONObject();
 						sp.put("description", property + ": " + source);
-						sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{cId}", genomeId).replace("{source}", source));
+						sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{genomeId}", genomeId).replace("{source}", source));
 						sp.put("data", pv.getValue());
 
 						specialtyGenes.add(sp);
@@ -1262,32 +1020,31 @@ public class DataGenerator {
 			// Genome Browser
 			JSONObject link = new JSONObject();
 			link.put("name", "Genome Browser");
-			link.put("link", URL_GENOMEBROWSER.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_GENOMEBROWSER.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Feature Table
 			link = new JSONObject();
 			link.put("name", "Feature Table");
-			link.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-					.replace("{featureType}", "").replace("{filterType}", ""));
+			link.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Protein Family
 			link = new JSONObject();
 			link.put("name", "Protein Family Sorter");
-			link.put("link", URL_PROTEINFAMILY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_PROTEINFAMILY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Pathway
 			link = new JSONObject();
 			link.put("name", "Pathway");
-			link.put("link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", ""));
+			link.put("link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Transcriptomics
 			link = new JSONObject();
 			link.put("name", "Transcriptomics");
-			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{kw}", ""));
+			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			popGenome.put("links", links);
@@ -1311,7 +1068,7 @@ public class DataGenerator {
 
 			// construct genome
 			JSONObject popGenome = new JSONObject();
-			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			popGenome.put("link", URL_GENOMEOVERVIEW_TAB.replace("{genomeId}", genomeId));
 			popGenome.put("popularName", genome.getGenomeName());
 
 			JSONArray specialtyGenes = new JSONArray();
@@ -1324,7 +1081,7 @@ public class DataGenerator {
 					JSONObject sp = new JSONObject();
 					String source = entry.getKey();
 					sp.put("description", source);
-					sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{cId}", genomeId).replace("{source}", source));
+					sp.put("link", URL_SPECIALTY_GENE_TAB.replace("{genomeId}", genomeId).replace("{source}", source));
 					sp.put("data", entry.getValue());
 
 					specialtyGenes.add(sp);
@@ -1341,32 +1098,31 @@ public class DataGenerator {
 			// Genome Browser
 			JSONObject link = new JSONObject();
 			link.put("name", "Genome Browser");
-			link.put("link", URL_GENOMEBROWSER.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_GENOMEBROWSER.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Feature Table
 			link = new JSONObject();
 			link.put("name", "Feature Table");
-			link.put("link", URL_FEATURETABLE_TAB.replace("{cType}", "genome").replace("{cId}", genomeId)
-					.replace("{featureType}", "").replace("{filterType}", ""));
+			link.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Protein Family
 			link = new JSONObject();
 			link.put("name", "Protein Family Sorter");
-			link.put("link", URL_PROTEINFAMILY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId));
+			link.put("link", URL_PROTEINFAMILY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Pathway
 			link = new JSONObject();
 			link.put("name", "Pathway");
-			link.put("link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", ""));
+			link.put("link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			// Transcriptomics
 			link = new JSONObject();
 			link.put("name", "Transcriptomics");
-			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{kw}", ""));
+			link.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{genomeId}", genomeId));
 			links.add(link);
 
 			popGenome.put("links", links);
@@ -1392,7 +1148,7 @@ public class DataGenerator {
 			JSONObject popGenome = new JSONObject();
 
 			popGenome.put("popularName", genome.getGenomeName());
-			popGenome.put("link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", ""));
+			popGenome.put("link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId).replace("{pId}", ""));
 
 			JSONArray data = new JSONArray();
 
@@ -1433,12 +1189,16 @@ public class DataGenerator {
 				JSONObject pw = new JSONObject();
 
 				pw.put("name", pathway.get("name"));
-				pw.put("name_link", URL_PATHWAY_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{pId}", pathway.get("id")));
-				// pw.put("class", item.get("pathway_class"));
+				pw.put("name_link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId) +
+						"&sub_tab=pathways&filter=and(eq(annotation,PATRIC),eq(pathway_id,{pId}))".replace("{pId}", pathway.get("id")));
+
 				pw.put("gene_count", pathway.get("gene_count"));
-				pw.put("gene_link", URL_PATHWAY_GENE_TAB.replace("{cId}", genomeId).replace("{pId}", pathway.get("id")));
+				pw.put("gene_link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId) +
+						"&sub_tab=genes&filter=and(eq(annotation,PATRIC),eq(pathway_id,{pId}))".replace("{pId}", pathway.get("id")));
+
 				pw.put("ec_count", pathway.get("ec_count"));
-				pw.put("ec_link", URL_PATHWAY_EC_TAB.replace("{cId}", genomeId).replace("{pId}", pathway.get("id")));
+				pw.put("ec_link", URL_PATHWAY_TAB.replace("{genomeId}", genomeId) +
+						"&sub_tab=ec_numbers&filter=and(eq(annotation,PATRIC),eq(pathway_id,{pId}))".replace("{pId}", pathway.get("id")));
 
 				data.add(pw);
 			}
@@ -1465,7 +1225,7 @@ public class DataGenerator {
 			Genome genome = dataApi.getGenome(genomeId);
 
 			popGenome.put("popularName", genome.getGenomeName());
-			popGenome.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{cType}", "genome").replace("{cId}", genomeId).replace("{kw}", ""));
+			popGenome.put("link", URL_TRANSCRIPTOMICS_TAB.replace("{genomeId}", genomeId));
 
 			// Retrieve eId associated a given genome
 			List<String> eIds = new ArrayList<>();
@@ -1504,7 +1264,7 @@ public class DataGenerator {
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) mutantsFacet.entrySet()) {
 					JSONObject mutant = new JSONObject();
 					mutant.put("label", entry.getKey());
-					mutant.put("value", entry.getValue());
+					mutant.put("count", entry.getValue());
 					data.add(mutant);
 					i++;
 					if (i > 4) {
@@ -1520,7 +1280,7 @@ public class DataGenerator {
 				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) conditionsFacet.entrySet()) {
 					JSONObject condition = new JSONObject();
 					condition.put("label", entry.getKey());
-					condition.put("value", entry.getValue());
+					condition.put("count", entry.getValue());
 					data.add(condition);
 					i++;
 					if (i > 4) {
@@ -1723,21 +1483,19 @@ public class DataGenerator {
 				int groupHash = ((Double) Math.ceil(genomeCount / totalGenomeCount * 10.0d)).intValue();
 
 //				LOGGER.trace("group hashing.. {}:{}/{} -> {}", figfamID, genomeCount, totalGenomeCount, groupHash);
-				if (distMap.get(groupHash) == null) {
-					distMap.put(groupHash, new LinkedList<String>());
-				}
+				distMap.putIfAbsent(groupHash, new LinkedList<String>());
 				distMap.get(groupHash).add(figfamID);
 			}
 
 			for (int i = 1; i <= 10; i++) {
 				JSONObject item = new JSONObject();
 				if (distMap.get(i) != null && !distMap.get(i).isEmpty()) {
-					item.put("x", (i) + "0%");
-					item.put("y", distMap.get(i).size());
+					item.put("label", (i) + "0%");
+					item.put("count", distMap.get(i).size());
 				}
 				else {
-					item.put("x", (i) + "0%");
-					item.put("y", 0);
+					item.put("label", (i) + "0%");
+					item.put("count", 0);
 				}
 				dist.add(item);
 			}
