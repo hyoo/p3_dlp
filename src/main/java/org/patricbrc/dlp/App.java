@@ -29,8 +29,8 @@ public class App {
 
 
 		// create cache for DLP
+		DataGenerator cacheGen = new DataGenerator();
 		try {
-				DataGenerator cacheGen = new DataGenerator();
 
 			if("AntibioticResistance".equalsIgnoreCase(args[1]) || "All".equalsIgnoreCase(args[1])) {
 				boolean antibioticResistance = cacheGen.createCacheFileAntibioticResistanceGenes("AntibioticResistance.json");
@@ -104,6 +104,9 @@ public class App {
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
+		}
+		finally{
+			cacheGen.close();
 		}
 	}
 }

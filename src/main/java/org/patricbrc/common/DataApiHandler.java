@@ -58,6 +58,8 @@ public class DataApiHandler {
 
 	private ObjectReader jsonListParser;
 
+	private CloseableHttpClient client;
+
 	public DataApiHandler() {
 		this.token = null;
 		this.init();
@@ -68,13 +70,25 @@ public class DataApiHandler {
 		ObjectMapper objectMapper = new ObjectMapper();
 		jsonParser = objectMapper.reader(Map.class);
 		jsonListParser = objectMapper.reader(List.class);
+		RequestConfig config = RequestConfig.custom().setSocketTimeout(timeout).setConnectTimeout(timeout).setConnectionRequestTimeout(timeout).build();
+		client = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+	}
+
+	public void close() {
+		try {
+			client.close();
+		}
+		catch (Exception e) {
+			LOGGER.error(e.getMessage(), e);
+		}
 	}
 
 	public String solrQuery(SolrCore core, SolrQuery query) {
 
 		String responseBody = null;
 		RequestConfig config = RequestConfig.custom().setSocketTimeout(timeout).setConnectTimeout(timeout).setConnectionRequestTimeout(timeout).build();
-		try (CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build()) {
+//		try (CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(config).build()) {
+		try {
 
 			HttpPost request = new HttpPost(baseUrl + core.getSolrCoreName());
 
@@ -114,7 +128,8 @@ public class DataApiHandler {
 	public String get(Map<String, String> headers, String url) {
 
 		String responseBody = null;
-		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+//		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+		try {
 			HttpGet request = new HttpGet(baseUrl + url);
 
 			if (headers != null) {
@@ -158,7 +173,8 @@ public class DataApiHandler {
 
 		String responseBody = null;
 
-		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+//		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+		try {
 
 			HttpPost request = new HttpPost(baseUrl);
 

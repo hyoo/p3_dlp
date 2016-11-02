@@ -87,6 +87,10 @@ public class DataGenerator {
 		jsonReader = objectMapper.reader(Map.class);
 	}
 
+	public void close(){
+		dataApi.close();
+	}
+
 	public boolean createCacheFileGenomes(String filePath) {
 		boolean isSuccess = false;
 		JSONObject jsonData = new JSONObject();
