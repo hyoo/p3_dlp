@@ -1489,7 +1489,7 @@ public class DataGenerator {
 
 			SolrQuery query = new SolrQuery("*:*");
 			query.addFilterQuery("feature_type:CDS AND annotation:PATRIC");
-			query.addFilterQuery(SolrCore.GENOME.getSolrCoreJoin("genome_id", "genome_id", "taxon_lineage_ids:" + taxonId));
+			query.addFilterQuery(SolrCore.GENOME.getSolrCoreJoin("genome_id", "genome_id", "reference_genome:* AND taxon_lineage_ids:" + taxonId));
 			query.setRows(0).setFacet(true)
 					.set("json.facet", "{stat:{field:{field:plfam_id,limit:-1,allBuckets:true,facet:{genome_count:\"unique(genome_id)\"}}}}");
 
