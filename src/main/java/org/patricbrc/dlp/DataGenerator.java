@@ -139,11 +139,11 @@ public class DataGenerator {
 		JSONObject data;
 
 		// add popularGenra
-		data = getPopularGeneraFigfam();
+		data = getPopularGeneraProteinFamily();
 		if (data != null) {
 			jsonData.put("popularGenomes", data);
 		}
-		// add figfam graph data
+		// add protein family graph data
 		data = getProteinFamilies();
 		if (data != null) {
 			jsonData.put("FIGfams", data);
@@ -303,7 +303,7 @@ public class DataGenerator {
 		JSONArray series = new JSONArray();
 
 		for (Integer txId : GENUS_TAXON_IDS) {
-			Map<String, Integer> stat = getFIGFamStat(txId);
+			Map<String, Integer> stat = getFamilyStat(txId);
 
 			Taxonomy taxonomy = dataApi.getTaxonomy(txId);
 
@@ -327,14 +327,14 @@ public class DataGenerator {
 		return jsonData;
 	}
 
-	private JSONObject getPopularGeneraFigfam() {
+	private JSONObject getPopularGeneraProteinFamily() {
 		JSONObject jsonData;
 		JSONArray list = new JSONArray();
 
 		for (Integer txId : GENUS_TAXON_IDS) {
 			Taxonomy taxonomy = dataApi.getTaxonomy(txId);
 
-			JSONArray data = getFIGFamConservationDistribution(txId);
+			JSONArray data = getFamilyConservationDistribution(txId);
 
 			JSONObject item = new JSONObject();
 			item.put("link", "/view/Taxonomy/" + txId + "#view_tab=proteinFamilies");
@@ -754,7 +754,7 @@ public class DataGenerator {
 			data.put("experiments", tr);
 
 			try {
-				SolrQuery query = new SolrQuery("figfam_id:[* TO *] AND annotation:PATRIC AND genome_id:" + genomeId);
+				SolrQuery query = new SolrQuery("plfam_id:[* TO *] AND annotation:PATRIC AND genome_id:" + genomeId);
 				query.setRows(0);
 
 				LOGGER.trace("[{}] {}", SolrCore.FEATURE.getSolrCoreName(), query);
@@ -797,6 +797,8 @@ public class DataGenerator {
 			JSONObject goAssignedProteins = new JSONObject();
 			JSONObject pathwayAssignedProteins = new JSONObject();
 			JSONObject figfamAssignedProteins = new JSONObject();
+			JSONObject plfamAssignedProteins = new JSONObject();
+			JSONObject pgfamAssignedProteins = new JSONObject();
 
 			// construct genome
 			JSONObject popGenome = new JSONObject();
@@ -903,6 +905,32 @@ public class DataGenerator {
 					figfamAssignedProteins.put("data", entry.getValue());
 				}
 				proteinSummary.add(figfamAssignedProteins);
+
+				// plfam assigned
+				Map plfamResponse = dataApi.getFieldFacets(SolrCore.FEATURE, "plfam_id:[* TO *]", filterCondition, "annotation");
+				Map plfamFacets= (Map) ((Map) plfamResponse.get("facets")).get("annotation");
+
+				plfamAssignedProteins.put("description", "PATRIC Local Family");
+				plfamAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(plfam_id,*))");
+
+				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) plfamFacets.entrySet()) {
+					plfamAssignedProteins.put("data", entry.getValue());
+				}
+				proteinSummary.add(plfamAssignedProteins);
+
+				// pgfam assigned
+				Map pgfamResponse = dataApi.getFieldFacets(SolrCore.FEATURE, "pgfam_id:[* TO *]", filterCondition, "annotation");
+				Map pgfamFacets= (Map) ((Map) pgfamResponse.get("facets")).get("annotation");
+
+				pgfamAssignedProteins.put("description", "PATRIC Global Family");
+				pgfamAssignedProteins.put("link", URL_FEATURETABLE_TAB.replace("{genomeId}", genomeId) +
+						"&filter=and(eq(annotation,PATRIC),eq(feature_type,CDS),eq(pgfam_id,*))");
+
+				for (Map.Entry<String, Integer> entry : (Iterable<Map.Entry>) pgfamFacets.entrySet()) {
+					pgfamAssignedProteins.put("data", entry.getValue());
+				}
+				proteinSummary.add(pgfamAssignedProteins);
 
 				// Specialty Gene Queries
 				Map response = dataApi.getPivotFacets(SolrCore.SPECIALTY_GENE_MAPPING, "genome_id:" + genomeId, null, "property,source");
@@ -1402,18 +1430,18 @@ public class DataGenerator {
 		return jsonData;
 	}
 
-	private Map<String, Integer> getFIGFamStat(int taxonId) {
+	private Map<String, Integer> getFamilyStat(int taxonId) {
 		Map<String, Integer> stat = new HashMap<>();
 
 		try {
 			final String filterCondition = SolrCore.GENOME.getSolrCoreJoin("genome_id", "genome_id", "taxon_lineage_ids:" + taxonId);
 
-			Map response = dataApi.getFieldFacets(SolrCore.FEATURE, "feature_type:CDS AND annotation:PATRIC", filterCondition, "figfam_id");
-			Map figfamFacets = (Map)((Map) response.get("facets")).get("figfam_id");
-			int total = figfamFacets.size();
+			Map response = dataApi.getFieldFacets(SolrCore.FEATURE, "feature_type:CDS AND annotation:PATRIC", filterCondition, "plfam_id");
+			Map familyFacets = (Map)((Map) response.get("facets")).get("plfam_id");
+			int total = familyFacets.size();
 
-			response = dataApi.getFieldFacets(SolrCore.FEATURE, "product:(hypothetical AND protein)", filterCondition, "figfam_id");
-			Map hypotheticalFacets = (Map)((Map) response.get("facets")).get("figfam_id");
+			response = dataApi.getFieldFacets(SolrCore.FEATURE, "product:(hypothetical AND protein)", filterCondition, "plfam_id");
+			Map hypotheticalFacets = (Map)((Map) response.get("facets")).get("plfam_id");
 			int hypothetical = hypotheticalFacets.size();
 
 			stat.put("total", total);
@@ -1423,9 +1451,9 @@ public class DataGenerator {
 			// counting core vs accessary
 			int countCore = 0;
 			SolrQuery query = new SolrQuery("*:*").addFilterQuery(filterCondition).setRows(0).setFacet(true);
-			query.set("json.facet", "{stat:{field:{field:figfam_id,limit:-1,allBuckets:true,facet:{genome_count:\"unique(genome_id)\"}}}}");
+			query.set("json.facet", "{stat:{field:{field:plfam_id,limit:-1,allBuckets:true,facet:{genome_count:\"unique(genome_id)\"}}}}");
 
-			LOGGER.debug("getFIGFamStat(): [{}] {}", SolrCore.FEATURE.getSolrCoreName(), query);
+			LOGGER.debug("getFamilyStat(): [{}] {}", SolrCore.FEATURE.getSolrCoreName(), query);
 
 			String apiResponse = dataApi.solrQuery(SolrCore.FEATURE, query);
 
@@ -1453,7 +1481,7 @@ public class DataGenerator {
 		return stat;
 	}
 
-	private JSONArray getFIGFamConservationDistribution(int taxonId) {
+	private JSONArray getFamilyConservationDistribution(int taxonId) {
 		JSONArray dist = new JSONArray();
 
 		try {
@@ -1463,9 +1491,9 @@ public class DataGenerator {
 			query.addFilterQuery("feature_type:CDS AND annotation:PATRIC");
 			query.addFilterQuery(SolrCore.GENOME.getSolrCoreJoin("genome_id", "genome_id", "taxon_lineage_ids:" + taxonId));
 			query.setRows(0).setFacet(true)
-					.set("json.facet", "{stat:{field:{field:figfam_id,limit:-1,allBuckets:true,facet:{genome_count:\"unique(genome_id)\"}}}}");
+					.set("json.facet", "{stat:{field:{field:plfam_id,limit:-1,allBuckets:true,facet:{genome_count:\"unique(genome_id)\"}}}}");
 
-			LOGGER.trace("getFIGFamConservationDistribution(), [{}] {}", SolrCore.FEATURE.getSolrCoreName(), query);
+			LOGGER.trace("getFamilyConservationDistribution(), [{}] {}", SolrCore.FEATURE.getSolrCoreName(), query);
 
 			String apiResponse = dataApi.solrQuery(SolrCore.FEATURE, query);
 
@@ -1478,13 +1506,13 @@ public class DataGenerator {
 			List<Map> buckets = (List<Map>)((Map) facets.get("stat")).get("buckets");
 
 			for (Map bucket : buckets) {
-				String figfamID = (String) bucket.get("val");
+				String familyID = (String) bucket.get("val");
 				double genomeCount = ((Integer) bucket.get("genome_count")).doubleValue();
 				int groupHash = ((Double) Math.ceil(genomeCount / totalGenomeCount * 10.0d)).intValue();
 
-//				LOGGER.trace("group hashing.. {}:{}/{} -> {}", figfamID, genomeCount, totalGenomeCount, groupHash);
-				distMap.putIfAbsent(groupHash, new LinkedList<String>());
-				distMap.get(groupHash).add(figfamID);
+//				LOGGER.trace("group hashing.. {}:{}/{} -> {}", familyID, genomeCount, totalGenomeCount, groupHash);
+				distMap.putIfAbsent(groupHash, new LinkedList<>());
+				distMap.get(groupHash).add(familyID);
 			}
 
 			for (int i = 1; i <= 10; i++) {
