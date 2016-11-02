@@ -64,7 +64,7 @@ public class DataGenerator {
 
 	private final String URL_FEATURETABLE_TAB = "/view/Genome/{genomeId}#view_tab=features";
 
-	private final String URL_PROTEINFAMILY_TAB = "/view/Genome/{genomeId}#view_tab=proteinFamilies";
+	private final String URL_PROTEINFAMILY_TAB = "/view/Genome/{genomeId}#view_tab=proteinFamilies&params={\"family_type\":\"plfam\"}";
 
 	private final String URL_PATHWAY_TAB = "/view/Genome/{genomeId}#view_tab=pathways";
 
