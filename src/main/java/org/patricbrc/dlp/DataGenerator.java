@@ -341,7 +341,7 @@ public class DataGenerator {
 			JSONArray data = getFamilyConservationDistribution(txId);
 
 			JSONObject item = new JSONObject();
-			item.put("link", "/view/Taxonomy/" + txId + "#view_tab=proteinFamilies");
+			item.put("link", "/view/Taxonomy/" + txId + "#view_tab=proteinFamilies&params={\"family_type\":\"plfam\"}");
 			item.put("popularName", taxonomy.getTaxonName());
 			item.put("popularData", data);
 
