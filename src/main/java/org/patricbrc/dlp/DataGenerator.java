@@ -487,67 +487,7 @@ public class DataGenerator {
 
 					JSONObject item = new JSONObject();
 
-					String icon;
-					switch (key) {
-					case "Human, Homo sapiens":
-						icon = "/patric/images/hosts/human.png";
-						break;
-					case "Cattle, Bos sp.":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "Cattle, Bos taurus":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "Bovine":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "Pig, Sus scrofa domesticus":
-						icon = "/patric/images/hosts/pig.png";
-						break;
-					case "Pig, Sus scrofa":
-						icon = "/patric/images/hosts/pig.png";
-						break;
-					case "Cassava, Manihot esculenta":
-						icon = "/patric/images/hosts/cassava.png";
-						break;
-					case "Bovine, Bovinae":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "Cow, Bos taurus":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "American bison, Bison bison":
-						icon = "/patric/images/hosts/bison.png";
-						break;
-					case "Mouse, Mus musculus":
-						icon = "/patric/images/hosts/mouse.png";
-						break;
-					case "cow":
-						icon = "/patric/images/hosts/cow.png";
-						break;
-					case "pig":
-						icon = "/patric/images/hosts/pig.png";
-						break;
-					case "tick":
-						icon = "/patric/images/hosts/tick.png";
-						break;
-					case "sheep":
-						icon = "/patric/images/hosts/sheep.png";
-						break;
-					case "Chicken, Gallus gallus":
-						icon = "/patric/images/hosts/blank.png";
-						break;
-					case "USA":
-						icon = "/patric/images/flags/United-States.png";
-						break;
-					default:
-						icon = "/patric/images/flags/" + key.replaceAll(" ", "-") + ".png";
-						break;
-					}
-
-					item.put("icon", icon);
 					item.put("label", key);
-					item.put("m_label", key.replaceAll(" ", "_").toLowerCase());
 					item.put("value", count);
 
 					data.add(item);
