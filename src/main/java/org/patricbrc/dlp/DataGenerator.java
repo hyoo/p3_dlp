@@ -44,6 +44,7 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
+import java.time.Year;
 import java.util.*;
 
 @SuppressWarnings("unchecked")
@@ -408,8 +409,11 @@ public class DataGenerator {
 		//.set("json.facet", "{genome_count:{range:{field:completion_date,start:\"2010-01-01T00:00:00.000Z\",end:\"2016-01-01T00:00:00.000Z\",gap:\"%2B1YEAR\",other:\"before\"}}}");
 
 		try {
-			Date rangeStartDate = DateUtil.parseDate("2011-01-01'T'00:00:00.000'Z'");
-			Date rangeEndDate = DateUtil.parseDate("2017-01-01'T'00:00:00.000'Z'");
+			int year = Year.now().getValue();
+			String yearStart = "" + (year - 5);
+			String yearEnd = "" + (year + 1);
+			Date rangeStartDate = DateUtil.parseDate(yearStart + "-01-01'T'00:00:00.000'Z'");
+			Date rangeEndDate = DateUtil.parseDate(yearEnd + "-01-01'T'00:00:00.000'Z'");
 
 			queryComplete.addDateRangeFacet("completion_date", rangeStartDate, rangeEndDate, "+1YEAR").add(FacetParams.FACET_RANGE_OTHER, "before");
 			queryWGS.addDateRangeFacet("completion_date", rangeStartDate, rangeEndDate, "+1YEAR").add(FacetParams.FACET_RANGE_OTHER, "before");
