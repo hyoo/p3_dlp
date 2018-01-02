@@ -14,3 +14,7 @@ java -DDataApi.Url=https://www.alpha.patricbrc.org/api/ -jar target/p3_dlp-1.0-S
 ```
 java -DDataApi.Url=https://www.alpha.patricbrc.org/api/ -Djavax.net.ssl.trustStore=cacerts -jar target/p3_dlp-1.0-SNAPSHOT-jar-with-dependencies.jar  ./ All
 ```
+## formatting
+```
+jq '.' Genomes.json --indent 4 > ../p3_api/content/dlp/Genomes.json
+```
