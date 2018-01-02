@@ -400,8 +400,8 @@ public class DataGenerator {
 		JSONArray series = new JSONArray();
 
 		// TODO: reimplement with json facet using sub faceting
-		SolrQuery queryComplete = new SolrQuery("genome_status:Complete");
-		SolrQuery queryWGS = new SolrQuery("genome_status:WGS");
+		SolrQuery queryComplete = new SolrQuery("genome_status:Complete AND taxon_lineage_ids:131567");
+		SolrQuery queryWGS = new SolrQuery("genome_status:WGS AND taxon_lineage_ids:131567");
 
 		queryComplete.setFacet(true).setRows(0).setFacetSort(FacetParams.FACET_SORT_INDEX);
 		//.set("json.facet", "{genome_count:{range:{field:completion_date,start:\"2010-01-01T00:00:00.000Z\",end:\"2016-01-01T00:00:00.000Z\",gap:\"%2B1YEAR\",other:\"before\"}}}");
